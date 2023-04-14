@@ -16,7 +16,7 @@ $user = $stmt->fetch();
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Espace Membre</title>
+    <title>Espace Membre | Ayra</title>
 </head>
 <body>
 <h1>Bienvenue dans votre espace membre</h1>
