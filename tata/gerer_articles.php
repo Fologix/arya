@@ -32,7 +32,7 @@ if (isset($_POST['ajouter_produit'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Gérer les articles | AYRA</title>
+    <title>Gérer les articles | AYR</title>
 </head>
 <body>
 <button onclick="window.location.href='panel_admin.php'">Retourner au panel admin</button>
