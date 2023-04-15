@@ -52,10 +52,23 @@ if (isset($_POST['submit'])) {
     <br>
     <label for="password">Mot de passe :</label>
     <input type="password" name="password" id="password" required>
+    <input type="button" id="toggle-password" value="Afficher le mot de passe">
     <br>
     <input type="submit" name="submit" value="Connexion">
 </form>
 <p><a href="mot_de_passe_oublie.php">Mot de passe oublié ?</a></p>
 <p><a href="inscription.php">Créer un compte</a></p>
+<script>
+    const togglePassword = document.querySelector('#toggle-password');
+    const password = document.querySelector('#password');
+
+    togglePassword.addEventListener('click', function (e) {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.value = this.value === 'Afficher le mot de passe' ? 'Masquer le mot de passe' : 'Afficher le mot de passe';
+    });
+</script>
 </body>
 </html>
+
+

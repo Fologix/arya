@@ -9,14 +9,12 @@ function check_password_strength($password) {
     return ($lowercase && $uppercase && $number && $special_chars);
 }
 
-
 $pdo = connexion_bdd();
 
 if (isset($_POST['submit'])) {
     $prenom = $_POST['prenom'];
     $nom = $_POST['nom'];
     $date_naissance = $_POST['date_naissance'];
-    $sexe = $_POST['sexe'];
     $adresse = $_POST['adresse'];
     $code_postal = $_POST['code_postal'];
     $ville = $_POST['ville'];
@@ -29,24 +27,33 @@ if (isset($_POST['submit'])) {
     if (!empty($prenom) && !empty($nom) && !empty($email) && !empty($password) && !empty($confirm_password)) {
         if ($password === $confirm_password) {
             if (check_password_strength($password)) {
-                $password = password_hash($password, PASSWORD_DEFAULT);
-                echo "Password input: " . $_POST['password'] . ". Password hash: " . $password . "<br>";
-                $sql = "INSERT INTO client (prenom_client, nom_client, date_naiss_client, sexe_client, adresse_client, code_postal_client, localite_client, telephone_client, mail, civilite, password) VALUES (:prenom_client, :nom_client, :date_naiss_client, :sexe_client, :adresse_client, :code_postal_client, :localite_client, :telephone_client, :mail, :civilite, :password)";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    'prenom_client' => $prenom,
-                    'nom_client' => $nom,
-                    'date_naiss_client' => $date_naissance,
-                    'sexe_client' => $sexe,
-                    'adresse_client' => $adresse,
-                    'code_postal_client' => $code_postal,
-                    'localite_client' => $ville,
-                    'telephone_client' => $telephone,
-                    'mail' => $email,
-                    'civilite' => $civilite,
-                    'password' => $password,
-                ]);
-                $message = "Inscription réussie !";
+                // Vérification de l'adresse e-mail dans la base de données
+                $sql_check_email = "SELECT * FROM client WHERE mail = :mail";
+                $stmt_check_email = $pdo->prepare($sql_check_email);
+                $stmt_check_email->execute(['mail' => $email]);
+                $existing_user = $stmt_check_email->fetch();
+
+                if (!$existing_user) {
+                    $password = password_hash($password, PASSWORD_DEFAULT);
+                    echo "Password input: " . $_POST['password'] . ". Password hash: " . $password . "<br>";
+                    $sql = "INSERT INTO client (prenom_client, nom_client, date_naiss_client, adresse_client, code_postal_client, localite_client, telephone_client, mail, civilite, password) VALUES (:prenom_client, :nom_client, :date_naiss_client, :adresse_client, :code_postal_client, :localite_client, :telephone_client, :mail, :civilite, :password)";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([
+                        'prenom_client' => $prenom,
+                        'nom_client' => $nom,
+                        'date_naiss_client' => $date_naissance,
+                        'adresse_client' => $adresse,
+                        'code_postal_client' => $code_postal,
+                        'localite_client' => $ville,
+                        'telephone_client' => $telephone,
+                        'mail' => $email,
+                        'civilite' => $civilite,
+                        'password' => $password,
+                    ]);
+                    $message = "Inscription réussie !";
+                } else {
+                    $error = "Cette adresse e-mail est déjà utilisée. Veuillez en choisir une autre.";
+                }
             } else {
                 $error = "Le mot de passe doit contenir au moins une majuscule et un caractère spécial.";
             }
@@ -106,11 +113,6 @@ if (isset($_POST['submit'])) {
     <input type="text" name="prenom" placeholder="Prénom" required><br>
     <input type="text" name="nom" placeholder="Nom" required><br>
     <input type="date" name="date_naissance" placeholder="Date de naissance"><br>
-    <select name="sexe">
-        <option value="">Sélectionnez votre sexe</option>
-        <option value="homme">Homme</option>
-        <option value="femme">Femme</option>
-    </select><br>
     <input type="text" name="adresse" placeholder="Adresse"><br>
     <input type="text" name="code_postal" placeholder="Code postal"><br>
     <input type="text" name="ville" placeholder="Ville"><br>

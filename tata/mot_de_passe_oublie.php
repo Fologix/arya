@@ -1,43 +1,62 @@
 <?php
 include_once 'connexion_BDD.php';
 
-if (isset($_POST['submit'])) {
-    $email = $_POST['email'];
+if (isset($_GET['token'])) {
+    $token = $_GET['token'];
 
-    if (!empty($email)) {
-        $pdo = connexion_bdd();
-        $stmt = $pdo->prepare("SELECT * FROM client WHERE mail = :email");
-        $stmt->execute(['email' => $email]);
-        $user = $stmt->fetch();
+    $pdo = connexion_bdd();
+    $stmt = $pdo->prepare("SELECT * FROM password_reset WHERE token = :token AND expires_at > NOW()");
+    $stmt->execute(['token' => $token]);
+    $reset_request = $stmt->fetch();
 
-        if ($user) {
-            // Par exemple, vous pouvez générer un token unique, le stocker dans la base de données avec une date d'expiration, et envoyer un lien de réinitialisation par e-mail.
-            $message = "Un e-mail contenant les instructions pour réinitialiser votre mot de passe a été envoyé.";
-        } else {
-            $error = "Aucun compte associé à cette adresse e-mail.";
+    if ($reset_request) {
+        if (isset($_POST['submit'])) {
+            $password = $_POST['password'];
+            $confirm_password = $_POST['confirm_password'];
+
+            if (!empty($password) && !empty($confirm_password) && ($password === $confirm_password)) {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("UPDATE client SET password = :password WHERE id = :id");
+                $stmt->execute(['password' => $hashed_password, 'id' => $reset_request['client_id']]);
+                $stmt = $pdo->prepare("DELETE FROM password_reset WHERE token = :token");
+                $stmt->execute(['token' => $token]);
+                $message = "Votre mot de passe a été réinitialisé.";
+            } else {
+                $error = "Les mots de passe ne correspondent pas.";
+            }
         }
+        ?>
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <title>Réinitialisation du mot de passe</title>
+        </head>
+        <body>
+        <h1>Réinitialisation du mot de passe</h1>
+        <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
+        <?php if (isset($error)) { echo "<p>$error</p>"; } ?>
+        <form method="post">
+            <label for="password">Nouveau mot de passe :</label>
+            <input type="password" name="password" id="password" required>
+            <br>
+            <label for="confirm_password">Confirmez le nouveau mot de passe :</label>
+            <input type="password" name="confirm_password" id="confirm_password" required>
+            <br>
+            <input type="submit" name="submit" value="Réinitialiser le mot de passe">
+        </form>
+        <p><a href="connexion.php">Retour à la connexion</a></p>
+        </body>
+        </html>
+        <?php
     } else {
-        $error = "Veuillez entrer votre adresse e-mail.";
+        // Si le token est invalide ou expiré
+        $error = "Votre demande de réinitialisation de mot de passe est invalide ou a expiré.";
+        echo "<p>$error</p>";
     }
+} else {
+    // Si le token n'est pas présent dans l'URL
+    header("Location: mot_de_passe_oublie.php");
+    exit();
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Mot de passe oublié</title>
-</head>
-<body>
-<h1>Mot de passe oublié</h1>
-<?php if (isset($message)) { echo "<p>$message</p>"; } ?>
-<?php if (isset($error)) { echo "<p>$error</p>"; } ?>
-<form method="post">
-    <label for="email">Email :</label>
-    <input type="email" name="email" id="email" required>
-    <br>
-    <input type="submit" name="submit" value="Envoyer">
-</form>
-<p><a href="connexion.php">Retour à la connexion</a></p>
-</body>
-</html>
