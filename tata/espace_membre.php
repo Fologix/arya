@@ -20,9 +20,7 @@ $user = $stmt->fetch();
 </head>
 <body>
 <h1>Bienvenue dans votre espace membre</h1>
-<p>Prénom : <?php echo htmlspecialchars($user['prenom_client']); ?></p>
-<p>Nom : <?php echo htmlspecialchars($user['nom_client']); ?></p>
-<p>Email : <?php echo htmlspecialchars($user['mail']); ?></p>
+<p>Bonjour, <?php echo htmlspecialchars($user['prenom_client']);echo ' '; echo htmlspecialchars($user['nom_client']); ?></p>
 
 <div class="espace_membre_menu">
     <ul>
@@ -34,8 +32,11 @@ $user = $stmt->fetch();
     </ul>
 </div>
 
-<!-- Vous pouvez ajouter d'autres éléments pour l'espace membre ici. -->
 </body>
+
+<?php
+    include_once('footer.php');
+?>
 </html>
 
 

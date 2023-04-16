@@ -28,9 +28,11 @@ $prenom = $user['prenom_vendeur'];
     <li><a href="gerer_commandes.php">Gérer les commandes</a></li>
     <li><a href="gerer_stock.php">Gérer le stock</a></li>
     <li><a href="gerer_ventes.php">Gérer les ventes</a></li>
-    <li><a href="gerer_clients.php">Gérer les clients</a></li>
     <li><a href="gerer_carte_fidelite.php">Gérer les cartes de fidélité</a></li>
     <li><a href="deconnexion.php">Déconnexion</a></li>
 </ul>
 </body>
+<?php
+include_once('footer.php');
+?>
 </html>
