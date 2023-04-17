@@ -104,7 +104,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="panier-container">
         <button class="panier-toggle" onclick="afficherMasquerPanier()">Afficher/Masquer le panier</button>
         <div id="panier" class="panier" style="display:none">
-            <h2>Panier</h2>
+            <h2>Panier ok</h2>
             <?php afficherContenuPanier(); ?>
         </div>
     </div>
