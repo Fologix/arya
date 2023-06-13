@@ -12,20 +12,18 @@ if (!isset($_SESSION['user_id'])) {
 if (isset($_POST['ajouter_produit'])) {
     $nom_produit = $_POST['nom_produit'];
     $prix_vente_htva = $_POST['prix_vente_htva'];
-    $taux_tva = $_POST['taux_tva'];
-    $prix_vente_tvac = $prix_vente_htva * (1 + $taux_tva / 100);
-    $code_barre = $_POST['code_barre'];
     $marque_produit = $_POST['marque_produit'];
     $taille_produit = $_POST['taille_produit'];
     $sexe_produit = $_POST['sexe_produit'];
+    $id_etat = $_POST['id_etat'];
 
     $image = $_FILES['image']['name'];
     $target = "img/" . basename($image);
     move_uploaded_file($_FILES['image']['tmp_name'], $target);
 
     $pdo = connexion_bdd();
-    $stmt = $pdo->prepare("INSERT INTO produit (nom_produit, prix_vente_htva, prix_vente_tvac, taux_tva, code_barre, classe_image, marque_produit, taille_produit, sexe_produit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$nom_produit, $prix_vente_htva, $prix_vente_tvac, $taux_tva, $code_barre, $target, $marque_produit, $taille_produit, $sexe_produit]);
+    $stmt = $pdo->prepare("INSERT INTO produit (nom_produit, prix_vente_htva, classe_image, id_marque, id_taille, sexe_produit, id_etat) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$nom_produit, $prix_vente_htva, $target, $marque_produit, $taille_produit, $sexe_produit, $id_etat]);
 }
 ?>
 <!DOCTYPE html>
@@ -44,20 +42,29 @@ if (isset($_POST['ajouter_produit'])) {
     <label for="prix_vente_htva">Prix HTVA:</label>
     <input type="number" step="0.01" name="prix_vente_htva" id="prix_vente_htva" required>
     <br>
-    <label for="taux_tva">Taux TVA:</label>
-    <input type="number" step="0.01" name="taux_tva" id="taux_tva" required>
-    <br>
-    <label for="code_barre">Code barre:</label>
-    <input type="text" name="code_barre" id="code_barre" required>
-    <br>
     <label for="image">Image:</label>
     <input type="file" name="image" id="image" required>
     <br>
     <label for="marque_produit">Marque:</label>
-    <input type="text" name="marque_produit" id="marque_produit" required>
+    <select name="marque_produit" id="marque_produit" required>
+        <?php
+        $pdo = connexion_bdd();
+        $marqueStmt = $pdo->query("SELECT * FROM marque");
+        while ($row = $marqueStmt->fetch(PDO::FETCH_ASSOC)) {
+            echo '<option value="' . $row['id_marque'] . '">' . $row['nom_marque'] . '</option>';
+        }
+        ?>
+    </select>
     <br>
     <label for="taille_produit">Taille:</label>
-    <input type="text" name="taille_produit" id="taille_produit" required>
+    <select name="taille_produit" id="taille_produit" required>
+        <?php
+        $tailleStmt = $pdo->query("SELECT * FROM taille");
+        while ($row = $tailleStmt->fetch(PDO::FETCH_ASSOC)) {
+            echo '<option value="' . $row['id_taille'] . '">' . $row['libelle'] . '</option>';
+        }
+        ?>
+    </select>
     <br>
     <label for="sexe_produit">Sexe:</label>
     <select name="sexe_produit" id="sexe_produit" required>
@@ -65,26 +72,33 @@ if (isset($_POST['ajouter_produit'])) {
         <option value="femme">Femme</option>
     </select>
     <br>
+    <label for="id_etat">État:</label>
+    <select name="id_etat" id="id_etat" required>
+        <?php
+        $etatStmt = $pdo->query("SELECT * FROM etat");
+        while ($row = $etatStmt->fetch(PDO::FETCH_ASSOC)) {
+            echo '<option value="' . $row['id_etat'] . '">' . $row['libelle_etat'] . '</option>';
+        }
+        ?>
+    </select>
+    <br>
     <input type="submit" name="ajouter_produit" value="Ajouter le produit">
 </form>
 <h1>Liste des produits</h1>
 <?php
-$pdo = connexion_bdd();
-$stmt = $pdo->query("SELECT * FROM produit");
+$stmt = $pdo->query("SELECT * FROM produit JOIN marque ON produit.id_marque = marque.id_marque JOIN etat ON produit.id_etat = etat.id_etat JOIN taille ON produit.id_taille = taille.id_taille");
 echo '<table border="1">';
-echo '<tr><th>ID</th><th>Nom</th><th>Prix HTVA</th><th>Prix TVAC</th><th>Taux TVA</th><th>Code barre</th><th>Image</th><th>Marque</th><th>Taille</th><th>Sexe</th><th>Actions</th></tr>';
+echo '<tr><th>ID</th><th>Nom</th><th>Prix HTVA</th><th>Image</th><th>Marque</th><th>Taille</th><th>Sexe</th><th>État</th><th>Actions</th></tr>';
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     echo '<tr>';
     echo '<td>' . $row['id_produit'] . '</td>';
     echo '<td>' . $row['nom_produit'] . '</td>';
     echo '<td>' . $row['prix_vente_htva'] . '</td>';
-    echo '<td>' . $row['prix_vente_tvac'] . '</td>';
-    echo '<td>' . $row['taux_tva'] . '</td>';
-    echo '<td>' . $row['code_barre'] . '</td>';
     echo '<td><img src="' . $row['classe_image'] . '" width="100"></td>';
-    echo '<td>' . $row['marque_produit'] . '</td>';
-    echo '<td>' . $row['taille_produit'] . '</td>';
+    echo '<td>' . $row['nom_marque'] . '</td>';
+    echo '<td>' . $row['libelle'] . '</td>';
     echo '<td>' . $row['sexe_produit'] . '</td>';
+    echo '<td>' . $row['libelle_etat'] . '</td>'; // Utiliser le champ correct pour l'État
     echo '<td><a href="modifier_produit.php?id=' . $row['id_produit'] . '">Modifier</a> | <a href="supprimer_produit.php?id=' . $row['id_produit'] . '">Supprimer</a></td>';
     echo '</tr>';
 }

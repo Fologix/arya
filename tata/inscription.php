@@ -14,13 +14,7 @@ $pdo = connexion_bdd();
 if (isset($_POST['submit'])) {
     $prenom = $_POST['prenom'];
     $nom = $_POST['nom'];
-    $date_naissance = $_POST['date_naissance'];
-    $adresse = $_POST['adresse'];
-    $code_postal = $_POST['code_postal'];
-    $ville = $_POST['ville'];
-    $telephone = $_POST['telephone'];
     $email = $_POST['email'];
-    $civilite = $_POST['civilite'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
@@ -36,18 +30,12 @@ if (isset($_POST['submit'])) {
                 if (!$existing_user) {
                     $password = password_hash($password, PASSWORD_DEFAULT);
                     echo "Password input: " . $_POST['password'] . ". Password hash: " . $password . "<br>";
-                    $sql = "INSERT INTO client (prenom_client, nom_client, date_naiss_client, adresse_client, code_postal_client, localite_client, telephone_client, mail, civilite, password) VALUES (:prenom_client, :nom_client, :date_naiss_client, :adresse_client, :code_postal_client, :localite_client, :telephone_client, :mail, :civilite, :password)";
+                    $sql = "INSERT INTO client (prenom_client, nom_client, mail,password) VALUES (:prenom_client, :nom_client,:mail, :password)";
                     $stmt = $pdo->prepare($sql);
                     $stmt->execute([
                         'prenom_client' => $prenom,
                         'nom_client' => $nom,
-                        'date_naiss_client' => $date_naissance,
-                        'adresse_client' => $adresse,
-                        'code_postal_client' => $code_postal,
-                        'localite_client' => $ville,
-                        'telephone_client' => $telephone,
                         'mail' => $email,
-                        'civilite' => $civilite,
                         'password' => $password,
                     ]);
                     $message = "Inscription réussie !";
@@ -112,18 +100,7 @@ if (isset($_POST['submit'])) {
 <form method="POST" action="">
     <input type="text" name="prenom" placeholder="Prénom" required><br>
     <input type="text" name="nom" placeholder="Nom" required><br>
-    <input type="date" name="date_naissance" placeholder="Date de naissance"><br>
-    <input type="text" name="adresse" placeholder="Adresse"><br>
-    <input type="text" name="code_postal" placeholder="Code postal"><br>
-    <input type="text" name="ville" placeholder="Ville"><br>
-    <input type="tel" name="telephone" placeholder="Téléphone"><br>
     <input type="email" name="email" placeholder="Adresse e-mail" required><br>
-    <select name="civilite">
-        <option value="">Sélectionnez votre civilité</option>
-        <option value="monsieur">Monsieur</option>
-        <option value="madame">Madame</option>
-        <option value="mademoiselle">Mademoiselle</option>
-    </select><br>
     <input type="password" id="password" name="password" placeholder="Mot de passe" required onkeyup="updateProgressBar()"><br>
     <input type="password" name="confirm_password" placeholder="Confirmez le mot de passe" required><br>
     <div class="progress">

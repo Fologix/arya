@@ -15,15 +15,30 @@ if (isset($_GET['marque'])) {
     $marque = null;
 }
 
+if (isset($_GET['etat'])) {
+    $etat = $_GET['etat'];
+} else {
+    $etat = null;
+}
+
 // Construire la requête SQL en fonction des critères de recherche
-$sql = "SELECT * FROM produit WHERE 1=1";
+$sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, etat.libelle_etat AS libelle_etat 
+        FROM produit 
+        LEFT JOIN marque ON produit.id_marque = marque.id_marque 
+        LEFT JOIN taille ON produit.id_taille = taille.id_taille 
+        LEFT JOIN etat ON produit.id_etat = etat.id_etat 
+        WHERE 1=1";
 
 if ($taille) {
-    $sql .= " AND taille_produit = '$taille'";
+    $sql .= " AND produit.id_taille = $taille";
 }
 
 if ($marque) {
-    $sql .= " AND marque_produit = '$marque'";
+    $sql .= " AND produit.id_marque = $marque";
+}
+
+if ($etat) {
+    $sql .= " AND produit.id_etat = $etat";
 }
 
 // Récupérer la liste des produits
@@ -32,73 +47,93 @@ $stmt = $pdo->query($sql);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-Hzwy5Jv0SUr41SBEtVgGb0XpY3aW4qzqgH5xZGzCYn0JT7rB3y5BxVXQnKII8bHj" crossorigin="anonymous">
-        <title>Boutique</title>
-    </head>
-    <script>
-        function afficherMasquerPanier() {
-            var panier = document.getElementById("panier");
-            if (panier.style.display === "none") {
-                panier.style.display = "block";
-            } else {
-                panier.style.display = "none";
-            }
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
+          integrity="sha384-Hzwy5Jv0SUr41SBEtVgGb0XpY3aW4qzqgH5xZGzCYn0JT7rB3y5BxVXQnKII8bHj"
+          crossorigin="anonymous">
+    <title>Boutique</title>
+</head>
+<script>
+    function afficherMasquerPanier() {
+        var panier = document.getElementById("panier");
+        if (panier.style.display === "none") {
+            panier.style.display = "block";
+        } else {
+            panier.style.display = "none";
         }
-    </script>
+    }
+</script>
 <body>
 <div class="container">
     <h1>Boutique</h1>
-
 
     <!-- Formulaire de recherche -->
     <form method="get">
         <label for="taille">Taille :</label>
         <select name="taille" id="taille">
             <option value="">Toutes les tailles</option>
-            <option value="S" <?php if ($taille == 'S') echo 'selected'; ?>>S</option>
-            <option value="M" <?php if ($taille == 'M') echo 'selected'; ?>>M</option>
-            <option value="L" <?php if ($taille == 'L') echo 'selected'; ?>>L</option>
-            <option value="XL" <?php if ($taille == 'XL') echo 'selected'; ?>>XL</option>
+            <?php
+            $tailleStmt = $pdo->query("SELECT * FROM taille");
+            while ($row = $tailleStmt->fetch(PDO::FETCH_ASSOC)) {
+                $selected = ($taille == $row['id_taille']) ? 'selected' : '';
+                echo '<option value="' . $row['id_taille'] . '" ' . $selected . '>' . $row['libelle'] . '</option>';
+            }
+            ?>
         </select>
 
         <label for="marque">Marque :</label>
         <select name="marque" id="marque">
             <option value="">Toutes les marques</option>
-            <option value="Nike" <?php if ($marque == 'Nike') echo 'selected'; ?>>Nike</option>
-            <option value="Adidas" <?php if ($marque == 'Adidas') echo 'selected'; ?>>Adidas</option>
-            <option value="Puma" <?php if ($marque == 'Puma') echo 'selected'; ?>>Puma</option>
-            <option value="Reebok" <?php if ($marque == 'Reebok') echo 'selected'; ?>>Reebok</option>
+            <?php
+            $marqueStmt = $pdo->query("SELECT * FROM marque");
+            while ($row = $marqueStmt->fetch(PDO::FETCH_ASSOC)) {
+                $selected = ($marque == $row['id_marque']) ? 'selected' : '';
+                echo '<option value="' . $row['id_marque'] . '" ' . $selected . '>' . $row['nom_marque'] . '</option>';
+            }
+            ?>
+        </select>
+
+        <label for="etat">État :</label>
+        <select name="etat" id="etat">
+            <option value="">Tous les états</option>
+            <?php
+            $etatStmt = $pdo->query("SELECT * FROM etat");
+            while ($row = $etatStmt->fetch(PDO::FETCH_ASSOC)) {
+                $selected = ($etat == $row['id_etat']) ? 'selected' : '';
+                echo '<option value="' . $row['id_etat'] . '" ' . $selected . '>' . $row['libelle_etat'] . '</option>';
+            }
+            ?>
         </select>
 
         <input type="submit" value="Rechercher">
     </form>
 
     <!-- Liste des produits -->
-<?php if (count($produits) == 0) : ?>
-    <p>Aucun produit ne correspond à votre recherche.</p>
-<?php else : ?>
-    <h2>Résultats de la recherche :</h2>
-    <ul>
-        <?php foreach ($produits as $produit) : ?>
-            <li>
-                <h3><?php echo $produit['nom_produit']; ?></h3>
-                <img src="<?php echo $produit['classe_image']; ?>" alt="<?php echo $produit['nom_produit']; ?>" width="250px">
-                <p>Marque : <?php echo $produit['marque_produit']; ?></p>
-                <p>Taille : <?php echo $produit['taille_produit']; ?></p>
-                <p>Prix : <?php echo number_format($produit['prix_vente_tvac'], 2); ?> € TTC</p>
-                <form method="post">
-                    <input type="hidden" name="id_produit" value="<?php echo $produit['id_produit']; ?>">
-                    <input type="submit" name="ajouter_panier" value="Ajouter au panier">
-                    <input type="hidden" name="action" value="ajouter">
-                </form>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
+    <?php if (count($produits) == 0) : ?>
+        <p>Aucun produit ne correspond à votre recherche.</p>
+    <?php else : ?>
+        <h2>Résultats de la recherche :</h2>
+        <ul>
+            <?php foreach ($produits as $produit) : ?>
+                <li>
+                    <h3><?php echo $produit['nom_produit']; ?></h3>
+                    <img src="<?php echo $produit['classe_image']; ?>"
+                         alt="<?php echo $produit['nom_produit']; ?>" width="250px">
+                    <p>Taille : <?php echo $produit['libelle_taille']; ?></p>
+                    <p>Prix : <?php echo number_format($produit['prix_vente_htva'], 2); ?> €</p>
+                    <p>État : <?php echo $produit['libelle_etat']; ?></p>
+                    <form method="post">
+                        <input type="hidden" name="id_produit" value="<?php echo $produit['id_produit']; ?>">
+                        <input type="submit" name="ajouter_panier" value="Ajouter au panier">
+                        <input type="hidden" name="action" value="ajouter">
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
 
     <!-- Panier -->
     <div class="panier-container">
@@ -110,7 +145,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 </body>
-    <?php
-    include_once('footer.php');
-    ?>
+<?php
+include_once('footer.php');
+?>
 </html>

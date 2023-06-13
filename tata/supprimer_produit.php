@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Vérifier si l'ID du produit a été fourni en paramètre d'URL
+// Vérifier si l'ID du produit à supprimer a été fourni en paramètre d'URL
 if (!isset($_GET['id'])) {
     header('Location: gerer_articles.php');
     exit;
@@ -23,4 +23,3 @@ $stmt->execute([$_GET['id']]);
 header('Location: gerer_articles.php');
 exit;
 ?>
-
