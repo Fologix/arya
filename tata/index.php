@@ -3,23 +3,9 @@ include_once 'header.php';
 include_once 'panier.php';
 
 // Récupérer les critères de recherche
-if (isset($_GET['taille'])) {
-    $taille = $_GET['taille'];
-} else {
-    $taille = null;
-}
-
-if (isset($_GET['marque'])) {
-    $marque = $_GET['marque'];
-} else {
-    $marque = null;
-}
-
-if (isset($_GET['etat'])) {
-    $etat = $_GET['etat'];
-} else {
-    $etat = null;
-}
+$taille = isset($_GET['taille']) ? $_GET['taille'] : [];
+$marque = isset($_GET['marque']) ? $_GET['marque'] : [];
+$etat = isset($_GET['etat']) ? $_GET['etat'] : [];
 
 // Construire la requête SQL en fonction des critères de recherche
 $sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, etat.libelle_etat AS libelle_etat 
@@ -29,16 +15,16 @@ $sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, e
         LEFT JOIN etat ON produit.id_etat = etat.id_etat 
         WHERE 1=1";
 
-if ($taille) {
-    $sql .= " AND produit.id_taille = $taille";
+if (!empty($taille)) {
+    $sql .= " AND produit.id_taille IN (" . implode(',', array_map('intval', $taille)) . ")";
 }
 
-if ($marque) {
-    $sql .= " AND produit.id_marque = $marque";
+if (!empty($marque)) {
+    $sql .= " AND produit.id_marque IN (" . implode(',', array_map('intval', $marque)) . ")";
 }
 
-if ($etat) {
-    $sql .= " AND produit.id_etat = $etat";
+if (!empty($etat)) {
+    $sql .= " AND produit.id_etat IN (" . implode(',', array_map('intval', $etat)) . ")";
 }
 
 // Récupérer la liste des produits
@@ -73,40 +59,31 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Formulaire de recherche -->
     <form method="get">
         <label for="taille">Taille :</label>
-        <select name="taille" id="taille">
-            <option value="">Toutes les tailles</option>
-            <?php
-            $tailleStmt = $pdo->query("SELECT * FROM taille");
-            while ($row = $tailleStmt->fetch(PDO::FETCH_ASSOC)) {
-                $selected = ($taille == $row['id_taille']) ? 'selected' : '';
-                echo '<option value="' . $row['id_taille'] . '" ' . $selected . '>' . $row['libelle'] . '</option>';
-            }
-            ?>
-        </select>
+        <?php
+        $tailleStmt = $pdo->query("SELECT * FROM taille");
+        while ($row = $tailleStmt->fetch(PDO::FETCH_ASSOC)) {
+            $checked = in_array($row['id_taille'], $taille) ? 'checked' : '';
+            echo '<input type="checkbox" name="taille[]" value="' . $row['id_taille'] . '" ' . $checked . '>' . $row['libelle'] . '<br>';
+        }
+        ?>
 
         <label for="marque">Marque :</label>
-        <select name="marque" id="marque">
-            <option value="">Toutes les marques</option>
-            <?php
-            $marqueStmt = $pdo->query("SELECT * FROM marque");
-            while ($row = $marqueStmt->fetch(PDO::FETCH_ASSOC)) {
-                $selected = ($marque == $row['id_marque']) ? 'selected' : '';
-                echo '<option value="' . $row['id_marque'] . '" ' . $selected . '>' . $row['nom_marque'] . '</option>';
-            }
-            ?>
-        </select>
+        <?php
+        $marqueStmt = $pdo->query("SELECT * FROM marque");
+        while ($row = $marqueStmt->fetch(PDO::FETCH_ASSOC)) {
+            $checked = in_array($row['id_marque'], $marque) ? 'checked' : '';
+            echo '<input type="checkbox" name="marque[]" value="' . $row['id_marque'] . '" ' . $checked . '>' . $row['nom_marque'] . '<br>';
+        }
+        ?>
 
         <label for="etat">État :</label>
-        <select name="etat" id="etat">
-            <option value="">Tous les états</option>
-            <?php
-            $etatStmt = $pdo->query("SELECT * FROM etat");
-            while ($row = $etatStmt->fetch(PDO::FETCH_ASSOC)) {
-                $selected = ($etat == $row['id_etat']) ? 'selected' : '';
-                echo '<option value="' . $row['id_etat'] . '" ' . $selected . '>' . $row['libelle_etat'] . '</option>';
-            }
-            ?>
-        </select>
+        <?php
+        $etatStmt = $pdo->query("SELECT * FROM etat");
+        while ($row = $etatStmt->fetch(PDO::FETCH_ASSOC)) {
+            $checked = in_array($row['id_etat'], $etat) ? 'checked' : '';
+            echo '<input type="checkbox" name="etat[]" value="' . $row['id_etat'] . '" ' . $checked . '>' . $row['libelle_etat'] . '<br>';
+        }
+        ?>
 
         <input type="submit" value="Rechercher">
     </form>
