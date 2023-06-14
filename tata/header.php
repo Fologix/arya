@@ -1,5 +1,7 @@
 <?php
-session_start();
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
 include_once 'connexion_BDD.php';
 $pdo = connexion_bdd();
 
@@ -24,11 +26,14 @@ if (isset($_SESSION['user_id'])) {
             <div class="header_user_menu">
                 <a href="espace_membre.php">votre compte</a>
                 <a href="deconnexion.php">Déconnexion</a>
+                <button id="boutiqueBtn">Boutique</button> <!-- Nouveau bouton boutique -->
             </div>
         <?php else : ?>
             <a href="connexion.php">Connexion</a>
+            <button id="boutiqueBtn">Boutique</button> <!-- Nouveau bouton boutique -->
         <?php endif; ?>
     </div>
+
 </div>
 
 

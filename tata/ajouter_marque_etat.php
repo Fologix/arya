@@ -122,7 +122,7 @@ if (isset($_GET['supprimer_taille'])) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo '<tr>';
         echo '<td>' . $row['id_etat'] . '</td>';
-        echo '<td>' . $row['libelle'] . '</td>';
+        echo '<td>' . $row['libelle_etat'] . '</td>';
         echo '<td><a href="?supprimer_etat=' . $row['id_etat'] . '">Supprimer</a></td>';
         echo '</tr>';
     }

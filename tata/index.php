@@ -1,13 +1,15 @@
 <?php
+session_start();
 include_once 'header.php';
-include_once 'panier.php';
 
-// Récupérer les critères de recherche
+if (!isset($_SESSION['panier'])) {
+    $_SESSION['panier'] = [];
+}
+
 $taille = isset($_GET['taille']) ? $_GET['taille'] : [];
 $marque = isset($_GET['marque']) ? $_GET['marque'] : [];
 $etat = isset($_GET['etat']) ? $_GET['etat'] : [];
 
-// Construire la requête SQL en fonction des critères de recherche
 $sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, etat.libelle_etat AS libelle_etat 
         FROM produit 
         LEFT JOIN marque ON produit.id_marque = marque.id_marque 
@@ -27,10 +29,43 @@ if (!empty($etat)) {
     $sql .= " AND produit.id_etat IN (" . implode(',', array_map('intval', $etat)) . ")";
 }
 
-// Récupérer la liste des produits
 $pdo = connexion_bdd();
 $stmt = $pdo->query($sql);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if (isset($_POST['ajouter_panier'])) {
+    $id = $_POST['id_produit'];
+    $index = array_search($id, array_column($produits, 'id_produit'));
+
+    echo 'Index: ';
+    var_dump($index);
+    echo '<br>';
+
+    if ($index !== false) {
+        $produit = $produits[$index];
+
+//        echo 'Produit: ';
+//        var_dump($produit);
+//        echo '<br>';
+
+        $_SESSION['panier'][] = [
+            'id' => $id,
+            'image' => $produit['classe_image'],
+            'titre' => $produit['nom_produit'],
+            'taille' => $produit['libelle_taille'],
+            'prix' => $produit['prix_vente_htva']
+        ];
+
+//        echo 'Session Panier: ';
+//        var_dump($_SESSION['panier']);
+//        echo '<br>';
+
+    } else {
+        echo ('Pas de produit avec cet ID trouvé');
+    }
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -43,20 +78,40 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Boutique</title>
 </head>
 <script>
-    function afficherMasquerPanier() {
-        var panier = document.getElementById("panier");
-        if (panier.style.display === "none") {
-            panier.style.display = "block";
+    document.getElementById("boutiqueBtn").addEventListener("click", function() {
+        var boutique = document.getElementById("boutique");
+        if (boutique.style.display === "none") {
+            boutique.style.display = "block";
         } else {
-            panier.style.display = "none";
+            boutique.style.display = "none";
+            f
         }
-    }
+    });
 </script>
+
 <body>
 <div class="container">
     <h1>Boutique</h1>
 
-    <!-- Formulaire de recherche -->
+    <div class="panier-resume">
+        <h2>Panier</h2>
+        <p>Nombre d'articles : <?php echo count($_SESSION['panier']); ?></p>
+
+        <?php foreach ($_SESSION['panier'] as $id => $produit): ?>
+            <div class="produit-resume">
+                <img src="<?php echo $produit['image']; ?>" alt="<?php echo $produit['titre']; ?>" width="50">
+                <h3><?php echo $produit['titre']; ?></h3>
+                <p>Prix : <?php echo number_format($produit['prix'], 2); ?> €</p>
+                <form method="post">
+                    <input type="hidden" name="id_produit" value="<?php echo $id; ?>">
+                    <input type="submit" name="retirer_panier" value="Retirer du panier">
+                    <input type="hidden" name="action" value="retirer">
+                </form>
+            </div>
+        <?php endforeach; ?>
+        <a href="panier.php">Voir le panier</a>
+    </div>
+
     <form method="get">
         <label for="taille">Taille :</label>
         <?php
@@ -88,7 +143,6 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <input type="submit" value="Rechercher">
     </form>
 
-    <!-- Liste des produits -->
     <?php if (count($produits) == 0) : ?>
         <p>Aucun produit ne correspond à votre recherche.</p>
     <?php else : ?>
@@ -105,21 +159,11 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <form method="post">
                         <input type="hidden" name="id_produit" value="<?php echo $produit['id_produit']; ?>">
                         <input type="submit" name="ajouter_panier" value="Ajouter au panier">
-                        <input type="hidden" name="action" value="ajouter">
                     </form>
                 </li>
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>
-
-    <!-- Panier -->
-    <div class="panier-container">
-        <button class="panier-toggle" onclick="afficherMasquerPanier()">Afficher/Masquer le panier</button>
-        <div id="panier" class="panier" style="display:none">
-            <h2>Panier</h2>
-            <?php afficherContenuPanier(); ?>
-        </div>
-    </div>
 </div>
 </body>
 <?php
