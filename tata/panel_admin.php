@@ -25,6 +25,7 @@ $prenom = $user['prenom_vendeur'];
 <ul>
     <li><a href="gerer_articles.php">Gérer les articles</a></li>
     <li><a href="gerer_clients.php">Gérer les clients</a></li>
+    <li><a href="ajouter_admin.php">Gérer les Admin</a></li>
     <li><a href="gerer_commandes.php">Gérer les commandes</a></li>
     <li><a href="ajouter_marque_etat.php">Gérer les ajouts</a></li>
     <li><a href="gerer_ventes.php">Gérer les ventes</a></li>

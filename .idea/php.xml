@@ -14,6 +14,14 @@
     <include_path>
       <path value="$PROJECT_DIR$/tata/vendor/composer" />
       <path value="$PROJECT_DIR$/tata/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/tata/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/tata/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/tata/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/tata/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/tata/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/tata/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/tata/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/tata/vendor/guzzlehttp/psr7" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.0">

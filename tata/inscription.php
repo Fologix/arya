@@ -69,7 +69,7 @@ if (isset($_POST['submit'])) {
         .progress-bar {
             height: 100%;
             position: absolute;
-            background-color: #4CAF50;
+            background-color: #ff3f34; /* Rouge */
             width: 0;
         }
     </style>
@@ -80,16 +80,50 @@ if (isset($_POST['submit'])) {
             var width = 0;
 
             if (password.length >= 8) {
-                width += 33;
+                width += 16;
+                document.getElementById("eight-characters").style.backgroundColor = "green";
+            } else {
+                document.getElementById("eight-characters").style.backgroundColor = "";
             }
             if (/[A-Z]/.test(password)) {
-                width += 33;
+                width += 16;
+                document.getElementById("majuscule").style.backgroundColor = "green";
+            } else {
+                document.getElementById("majuscule").style.backgroundColor = "";
             }
             if (/[^\w]/.test(password)) {
-                width += 34;
+                width += 16;
+                document.getElementById("special").style.backgroundColor = "green";
+            } else {
+                document.getElementById("special").style.backgroundColor = "";
+            }
+            if (/\d/.test(password)) {
+                width += 16;
+                document.getElementById("chiffre").style.backgroundColor = "green";
+            } else {
+                document.getElementById("chiffre").style.backgroundColor = "";
+            }
+            if (/[a-z]/.test(password)) {
+                width += 16;
+                document.getElementById("minuscule").style.backgroundColor = "green";
+            } else {
+                document.getElementById("minuscule").style.backgroundColor = "";
             }
 
             progressBar.style.width = width + '%';
+            progressBar.style.backgroundColor = getProgressBarColor(width);
+        }
+
+        function getProgressBarColor(progress) {
+            if (progress < 28) {
+                return '#ff3f34'; // Rouge
+            } else if (progress < 34) {
+                return '#ffa500'; // Orange
+            } else if (progress < 67) {
+                return '#ffd700'; // Jaune
+            } else {
+                return '#4CAF50'; // Vert
+            }
         }
     </script>
 </head>
@@ -107,8 +141,13 @@ if (isset($_POST['submit'])) {
         <div id="progress-bar" class="progress-bar"></div>
     </div>
     <input type="submit" name="submit" value="S'inscrire">
+    <br>
+    <button id="eight-characters">8 caractères minimum</button>
+    <button id="majuscule">Majuscule</button>
+    <button id="special">Caractère spécial</button>
+    <button id="chiffre">Chiffre</button>
+    <button id="minuscule">Minuscule</button>
 </form>
 <a href="connexion.php">Retour à la connexion</a>
 </body>
 </html>
-

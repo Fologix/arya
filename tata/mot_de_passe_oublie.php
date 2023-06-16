@@ -62,7 +62,7 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <title>Mot de passe oublié</title>
-    <link rel="stylesheet" href="connexion.css">
+    <link rel="stylesheet" href="css/connexion.css">
 </head>
 <body>
 <h1>Réinitialisation du mot de passe</h1>
