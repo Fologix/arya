@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 // Dans panier.php
 $panier = isset($_SESSION['panier']) ? $_SESSION['panier'] : [];
 if (!empty($panier)) {
-    $ids = implode(',', array_map('intval', array_keys($panier)));
+    $ids = implode(',', array_map(function($item) { return $item['id']; }, $panier));
     $sql = "SELECT * FROM produit WHERE id_produit IN ($ids)";
     $stmt = $pdo->query($sql);
     $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -44,17 +44,17 @@ if (isset($_POST['retirer_panier'])) {
 <div class="container">
     <h1>Votre panier</h1>
 
-    <?php if (empty($produits)) : ?>
+    <?php if (empty($_SESSION['panier'])) : ?>
         <p>Votre panier est vide.</p>
     <?php else : ?>
         <ul>
-            <?php foreach ($produits as $produit) : ?>
+            <?php foreach ($_SESSION['panier'] as $id => $produit) : ?>
                 <li>
-                    <h3><?php echo $produit['nom_produit']; ?></h3>
-                    <p>Taille : <?php echo $produit['libelle_taille']; ?></p>
-                    <p>Prix : <?php echo number_format($produit['prix_vente_htva'], 2); ?> €</p>
+                    <h3><?php echo $produit['titre']; ?></h3>
+                    <p>Taille : <?php echo $produit['taille']; ?></p>
+                    <p>Prix : <?php echo number_format($produit['prix'], 2); ?> €</p>
                     <form method="post">
-                        <input type="hidden" name="id_produit" value="<?php echo $produit['id_produit']; ?>">
+                        <input type="hidden" name="id_produit" value="<?php echo $id; ?>">
                         <input type="submit" name="retirer_panier" value="Retirer du panier">
                         <input type="hidden" name="action" value="retirer">
                     </form>

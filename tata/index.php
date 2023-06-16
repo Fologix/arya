@@ -10,6 +10,19 @@ $taille = isset($_GET['taille']) ? $_GET['taille'] : [];
 $marque = isset($_GET['marque']) ? $_GET['marque'] : [];
 $etat = isset($_GET['etat']) ? $_GET['etat'] : [];
 
+// Traitement du formulaire de suppression
+if (isset($_POST['retirer_panier'])) {
+    $id = $_POST['id_produit'];
+
+    if (isset($_SESSION['panier'][$id])) {
+        unset($_SESSION['panier'][$id]);
+    }
+
+    // Redirection vers la page actuelle pour rafraîchir les données du panier affichées
+    header("location: index.php");
+    exit();
+}
+
 $sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, etat.libelle_etat AS libelle_etat 
         FROM produit 
         LEFT JOIN marque ON produit.id_marque = marque.id_marque 
@@ -37,29 +50,16 @@ if (isset($_POST['ajouter_panier'])) {
     $id = $_POST['id_produit'];
     $index = array_search($id, array_column($produits, 'id_produit'));
 
-    echo 'Index: ';
-    var_dump($index);
-    echo '<br>';
-
     if ($index !== false) {
         $produit = $produits[$index];
 
-//        echo 'Produit: ';
-//        var_dump($produit);
-//        echo '<br>';
-
-        $_SESSION['panier'][] = [
+        $_SESSION['panier'][$id] = [
             'id' => $id,
             'image' => $produit['classe_image'],
             'titre' => $produit['nom_produit'],
             'taille' => $produit['libelle_taille'],
             'prix' => $produit['prix_vente_htva']
         ];
-
-//        echo 'Session Panier: ';
-//        var_dump($_SESSION['panier']);
-//        echo '<br>';
-
     } else {
         echo ('Pas de produit avec cet ID trouvé');
     }
@@ -75,6 +75,7 @@ if (isset($_POST['ajouter_panier'])) {
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
           integrity="sha384-Hzwy5Jv0SUr41SBEtVgGb0XpY3aW4qzqgH5xZGzCYn0JT7rB3y5BxVXQnKII8bHj"
           crossorigin="anonymous">
+    <link rel="stylesheet" href="index.css">
     <title>Boutique</title>
 </head>
 <script>

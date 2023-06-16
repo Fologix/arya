@@ -1,0 +1,163 @@
+/* Styles généraux */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Styles pour le panier */
+.panier-resume {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.panier-resume h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.panier-resume p {
+    color: #777;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.produit-resume {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.produit-resume img {
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.produit-resume h3 {
+    color: #333;
+    font-size: 18px;
+    margin: 0;
+}
+
+.produit-resume p {
+    color: #777;
+    font-size: 14px;
+    margin: 0;
+}
+
+.produit-resume form {
+    margin-left: auto;
+}
+
+.produit-resume form input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.panier-resume a {
+    display: block;
+    text-align: center;
+    color: #333;
+    font-size: 16px;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+/* Styles pour le formulaire de recherche */
+.recherche-form {
+    margin-bottom: 20px;
+}
+
+.recherche-form label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.recherche-form input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.recherche-form input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+/* Styles pour les résultats de recherche */
+.resultats-liste {
+    list-style: none;
+    padding: 0;
+}
+
+.resultats-liste li {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.resultats-liste li img {
+    max-width: 250px;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.resultats-liste li h3 {
+    color: #333;
+    font-size: 20px;
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.resultats-liste li p {
+    color: #777;
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.resultats-liste li form {
+    margin-top: 10px;
+}
+
+.resultats-liste li form input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+/* Footer */
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
