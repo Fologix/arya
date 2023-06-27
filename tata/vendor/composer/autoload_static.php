@@ -11,12 +11,30 @@ class ComposerStaticInit06df9019f9e98507efba251906b5f2d6
         array (
             'Stripe\\' => 7,
         ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Stripe\\' => 
         array (
             0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'P' => 
+        array (
+            'PayPal' => 
+            array (
+                0 => __DIR__ . '/..' . '/paypal/rest-api-sdk-php/lib',
+            ),
         ),
     );
 
@@ -29,6 +47,7 @@ class ComposerStaticInit06df9019f9e98507efba251906b5f2d6
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$classMap;
 
         }, null, ClassLoader::class);

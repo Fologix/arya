@@ -3,6 +3,8 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/tata/vendor/stripe/stripe-php" />
+      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/paypal/rest-api-sdk-php" />
+      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/psr/log" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

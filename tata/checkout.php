@@ -18,6 +18,14 @@ if (empty($user['adresse_client']) || empty($user['code_postal_client']) || empt
     exit;
 }
 
+// Vérification de la méthode de paiement choisie
+if (!isset($_POST['payment'])) {
+    header("Location: payment_choice.php");
+    exit;
+}
+
+$payment_method = $_POST['payment'];
+
 // Calculez le total du panier.
 $total = 0;
 foreach ($_SESSION['panier'] as $id => $produit) {
@@ -27,27 +35,32 @@ foreach ($_SESSION['panier'] as $id => $produit) {
 // Convertissez le total en centimes, car Stripe travaille avec les plus petites unités monétaires.
 $totalCentimes = $total * 100;
 
-try {
-    // Créez une nouvelle Session Stripe.
-    $session = \Stripe\Checkout\Session::create([
-        'payment_method_types' => ['card'],
-        'line_items' => [[
-            'price_data' => [
-                'currency' => 'eur',
-                'product_data' => [
-                    'name' => 'Votre panier',
+if ($payment_method == 'credit_card') {
+    try {
+        // Créez une nouvelle Session Stripe.
+        $session = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => [
+                        'name' => 'Votre panier',
+                    ],
+                    'unit_amount' => $totalCentimes,
                 ],
-                'unit_amount' => $totalCentimes,
-            ],
-            'quantity' => 1,
-        ]],
-        'mode' => 'payment',
-        'success_url' => 'http://localhost/arya/tata/success.php?session_id={CHECKOUT_SESSION_ID}', // Remplacez par l'URL de succès.
-        'cancel_url' => 'http://localhost/arya/tata/cancel.php', // Remplacez par l'URL d'annulation.
-    ]);
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => 'http://localhost/arya/tata/success.php?session_id={CHECKOUT_SESSION_ID}', // Remplacez par l'URL de succès.
+            'cancel_url' => 'http://localhost/arya/tata/cancel.php', // Remplacez par l'URL d'annulation.
+        ]);
 
-    // Redirigez le client vers la page de paiement Stripe.
-    header("Location: " . $session->url);
-} catch (Exception $e) {
-    echo 'Erreur: ' . $e->getMessage();
+        // Redirigez le client vers la page de paiement Stripe.
+        header("Location: " . $session->url);
+    } catch (Exception $e) {
+        echo 'Erreur: ' . $e->getMessage();
+    }
+} elseif ($payment_method == 'paypal') {
+    header("Location: paypal_checkout.php");
+    exit;
 }
