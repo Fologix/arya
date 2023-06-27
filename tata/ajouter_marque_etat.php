@@ -21,7 +21,7 @@ if (isset($_POST['ajouter_etat'])) {
     $libelle_etat = $_POST['libelle_etat'];
 
     $pdo = connexion_bdd();
-    $stmt = $pdo->prepare("INSERT INTO etat (libelle) VALUES (?)");
+    $stmt = $pdo->prepare("INSERT INTO etat (libelle_etat) VALUES (?)");
     $stmt->execute([$libelle_etat]);
 }
 

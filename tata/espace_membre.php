@@ -25,9 +25,8 @@ $user = $stmt->fetch();
 <div class="espace_membre_menu">
     <ul>
         <li><a href="mes_commandes.php">Vos commandes</a></li>
-        <li><a href="#">Connexion et sécurité</a></li>
-        <li><a href="#">Adresse</a></li>
-        <li><a href="#">Vos paiements</a></li>
+        <li><a href="connexion_securite.php">Connexion et sécurité</a></li>
+        <li><a href="adresse.php">Adresse</a></li>
         <li><a href="#">Cartes cadeaux</a></li>
     </ul>
 </div>

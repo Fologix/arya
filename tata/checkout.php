@@ -1,48 +1,53 @@
 <?php
 session_start();
-include_once 'connexion_BDD.php';
-include_once 'header.php';
-require 'vendor/autoload.php';
+require 'vendor/autoload.php'; // Inclut la bibliothèque Stripe PHP. Assurez-vous de l'avoir installée via Composer.
 
-use SumUp\SumUp;
+\Stripe\Stripe::setApiKey('sk_test_51N2dVtEAVA2mzTaKMmxxO22mdUBwOrTfLv4R7gZpjBm4b3XVlyItU6a6K2G6YDQRwHZQx87E9XMV7hYPtE1p2P9d00E5j1FgRT'); // Remplacez par votre clé secrète Stripe.
+
+include_once 'connexion_BDD.php';
 
 $pdo = connexion_bdd();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: connexion.php");
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT * FROM client WHERE id_client = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch();
+
+if (empty($user['adresse_client']) || empty($user['code_postal_client']) || empty($user['localite_client'])) {
+    header("Location: validation_adresse.php");
     exit;
 }
 
-$panier = isset($_SESSION['panier']) ? $_SESSION['panier'] : [];
-$total = 0.00;
-if (!empty($panier)) {
-    foreach ($panier as $item) {
-        $total += $item['prix'];
-    }
+// Calculez le total du panier.
+$total = 0;
+foreach ($_SESSION['panier'] as $id => $produit) {
+    $total += $produit['prix'];
 }
 
-// Remplacez 'YOUR_SUMUP_ACCESS_TOKEN' par votre vrai token
-$accessToken = 'sup_sk_qzu72WX9NRdCkh1edk4Te4OIEL9Gxwibl';
+// Convertissez le total en centimes, car Stripe travaille avec les plus petites unités monétaires.
+$totalCentimes = $total * 100;
 
 try {
-    $sumup = new SumUp('yassine.verriez@hotmail.com', 'MC4EGPVD', 'http://localhost/arya/tata/index.php');
-    $sumup->authenticate('YOUR_AUTHORIZATION_CODE'); // Replace with your SumUp authorization code
+    // Créez une nouvelle Session Stripe.
+    $session = \Stripe\Checkout\Session::create([
+        'payment_method_types' => ['card'],
+        'line_items' => [[
+            'price_data' => [
+                'currency' => 'eur',
+                'product_data' => [
+                    'name' => 'Votre panier',
+                ],
+                'unit_amount' => $totalCentimes,
+            ],
+            'quantity' => 1,
+        ]],
+        'mode' => 'payment',
+        'success_url' => 'http://localhost/arya/tata/success.php?session_id={CHECKOUT_SESSION_ID}', // Remplacez par l'URL de succès.
+        'cancel_url' => 'http://localhost/arya/tata/cancel.php', // Remplacez par l'URL d'annulation.
+    ]);
 
-    $checkoutsService = $sumup->getCheckoutService();
-    $response = $checkoutsService->create($total, 'EUR', uniqid(), 'yassine.verriez@hotmail.com', 'Description du paiement');
-
-    $checkoutId = $response->getBody()->id;
-
-    if(isset($checkoutId)) {
-        header("Location: " . $checkoutId);
-        exit;
-    } else {
-        throw new Exception('La réponse de SumUp ne contient pas de lien de paiement.');
-    }
-
-} catch (\Exception $e) {
-    echo 'Erreur lors de la création du paiement SumUp: ' . $e->getMessage();
+    // Redirigez le client vers la page de paiement Stripe.
+    header("Location: " . $session->url);
+} catch (Exception $e) {
+    echo 'Erreur: ' . $e->getMessage();
 }
-
-include_once('footer.php');
-?>

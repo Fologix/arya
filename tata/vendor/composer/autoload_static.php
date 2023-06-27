@@ -4,54 +4,19 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit4334f767b0c32349af2e53f8d7349936
+class ComposerStaticInit06df9019f9e98507efba251906b5f2d6
 {
-    public static $files = array (
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
-        'P' => 
+        'S' => 
         array (
-            'Psr\\Http\\Message\\' => 17,
-            'Psr\\Http\\Client\\' => 16,
-            'PHPMailer\\PHPMailer\\' => 20,
-        ),
-        'G' => 
-        array (
-            'GuzzleHttp\\Psr7\\' => 16,
-            'GuzzleHttp\\Promise\\' => 19,
-            'GuzzleHttp\\' => 11,
+            'Stripe\\' => 7,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Psr\\Http\\Message\\' => 
+        'Stripe\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
-        ),
-        'Psr\\Http\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-client/src',
-        ),
-        'PHPMailer\\PHPMailer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
-        ),
-        'GuzzleHttp\\Psr7\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
-        ),
-        'GuzzleHttp\\Promise\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
-        ),
-        'GuzzleHttp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
     );
 
@@ -62,9 +27,9 @@ class ComposerStaticInit4334f767b0c32349af2e53f8d7349936
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit4334f767b0c32349af2e53f8d7349936::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit4334f767b0c32349af2e53f8d7349936::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit4334f767b0c32349af2e53f8d7349936::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit06df9019f9e98507efba251906b5f2d6::$classMap;
 
         }, null, ClassLoader::class);
     }

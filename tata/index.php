@@ -28,7 +28,8 @@ $sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, e
         LEFT JOIN marque ON produit.id_marque = marque.id_marque 
         LEFT JOIN taille ON produit.id_taille = taille.id_taille 
         LEFT JOIN etat ON produit.id_etat = etat.id_etat 
-        WHERE 1=1";
+        WHERE produit.etat_vente = 'disponible'";
+
 
 if (!empty($taille)) {
     $sql .= " AND produit.id_taille IN (" . implode(',', array_map('intval', $taille)) . ")";
@@ -85,7 +86,6 @@ if (isset($_POST['ajouter_panier'])) {
             boutique.style.display = "block";
         } else {
             boutique.style.display = "none";
-            f
         }
     });
 </script>

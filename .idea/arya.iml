@@ -2,14 +2,7 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/psr/http-client" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/psr/http-factory" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/psr/http-message" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/symfony/deprecation-contracts" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/ralouphie/getallheaders" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/guzzlehttp/guzzle" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/guzzlehttp/promises" />
-      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/tata/vendor/stripe/stripe-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
