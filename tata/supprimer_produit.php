@@ -16,8 +16,21 @@ if (!isset($_GET['id'])) {
 
 // Supprimer le produit de la base de données
 $pdo = connexion_bdd();
+
+// Récupérer le chemin de l'image avant de supprimer le produit
+$stmt = $pdo->prepare("SELECT classe_image FROM produit WHERE id_produit = ?");
+$stmt->execute([$_GET['id']]);
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$imagePath = $row['classe_image'];
+
+// Supprimer le produit
 $stmt = $pdo->prepare("DELETE FROM produit WHERE id_produit = ?");
 $stmt->execute([$_GET['id']]);
+
+// Vérifier si le fichier existe avant de le supprimer
+if (file_exists($imagePath)) {
+    unlink($imagePath);
+}
 
 // Rediriger vers la page de gestion des articles
 header('Location: gerer_articles.php');

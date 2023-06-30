@@ -8,6 +8,20 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Ajouter la fonction de compression d'image
+function compressImage($source, $destination, $quality) {
+    $info = getimagesize($source);
+    if ($info['mime'] == 'image/jpeg')
+        $image = imagecreatefromjpeg($source);
+    elseif ($info['mime'] == 'image/gif')
+        $image = imagecreatefromgif($source);
+    elseif ($info['mime'] == 'image/png')
+        $image = imagecreatefrompng($source);
+
+    // Enregistrer l'image compressée
+    imagejpeg($image, $destination, $quality);
+}
+
 // Traiter le formulaire d'ajout de produit et stocker l'image
 if (isset($_POST['ajouter_produit'])) {
     $nom_produit = $_POST['nom_produit'];
@@ -18,8 +32,17 @@ if (isset($_POST['ajouter_produit'])) {
     $id_etat = $_POST['id_etat'];
 
     $image = $_FILES['image']['name'];
-    $target = "img/" . basename($image);
-    move_uploaded_file($_FILES['image']['tmp_name'], $target);
+
+    // Obtenir l'extension du fichier
+    $ext = pathinfo($image, PATHINFO_EXTENSION);
+
+    // Créer un nouveau nom de fichier unique
+    $newName = uniqid() . '.' . $ext;
+
+    $target = "img/" . $newName;
+
+    // Compresser l'image avant de la déplacer
+    compressImage($_FILES['image']['tmp_name'], $target, 60);
 
     $pdo = connexion_bdd();
     $stmt = $pdo->prepare("INSERT INTO produit (nom_produit, prix_vente_htva, classe_image, id_marque, id_taille, sexe_produit, id_etat) VALUES (?, ?, ?, ?, ?, ?, ?)");
