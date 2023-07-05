@@ -30,6 +30,7 @@ if (isset($_POST['ajouter_produit'])) {
     $taille_produit = $_POST['taille_produit'];
     $sexe_produit = $_POST['sexe_produit'];
     $id_etat = $_POST['id_etat'];
+    $categorie_produit = $_POST['categorie_produit'];
 
     $image = $_FILES['image']['name'];
 
@@ -45,8 +46,8 @@ if (isset($_POST['ajouter_produit'])) {
     compressImage($_FILES['image']['tmp_name'], $target, 60);
 
     $pdo = connexion_bdd();
-    $stmt = $pdo->prepare("INSERT INTO produit (nom_produit, prix_vente_htva, classe_image, id_marque, id_taille, sexe_produit, id_etat) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$nom_produit, $prix_vente_htva, $target, $marque_produit, $taille_produit, $sexe_produit, $id_etat]);
+    $stmt = $pdo->prepare("INSERT INTO produit (nom_produit, prix_vente_htva, classe_image, id_marque, id_taille, sexe_produit, id_etat, id_categorie) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$nom_produit, $prix_vente_htva, $target, $marque_produit, $taille_produit, $sexe_produit, $id_etat, $categorie_produit]);
 }
 ?>
 <!DOCTYPE html>
@@ -105,13 +106,28 @@ if (isset($_POST['ajouter_produit'])) {
         ?>
     </select>
     <br>
+    <label for="categorie_produit">Categorie:</label>
+    <select name="categorie_produit" id="categorie_produit" required>
+        <?php
+        $categorieStmt = $pdo->query("SELECT * FROM categorie");
+        while ($row = $categorieStmt->fetch(PDO::FETCH_ASSOC)) {
+            echo '<option value="' . $row['id_categorie'] . '">' . $row['nom_categorie'] . '</option>';
+        }
+        ?>
+    </select>
+    <br>
     <input type="submit" name="ajouter_produit" value="Ajouter le produit">
 </form>
-<h1>Liste des produits</h1>
+<h1>Liste des produits disponibles</h1>
 <?php
-$stmt = $pdo->query("SELECT * FROM produit JOIN marque ON produit.id_marque = marque.id_marque JOIN etat ON produit.id_etat = etat.id_etat JOIN taille ON produit.id_taille = taille.id_taille");
+$stmt = $pdo->query("SELECT * FROM produit 
+JOIN marque ON produit.id_marque = marque.id_marque 
+JOIN etat ON produit.id_etat = etat.id_etat 
+JOIN taille ON produit.id_taille = taille.id_taille 
+LEFT JOIN categorie ON produit.id_categorie = categorie.id_categorie
+WHERE etat_vente = 'disponible'");
 echo '<table border="1">';
-echo '<tr><th>ID</th><th>Nom</th><th>Prix HTVA</th><th>Image</th><th>Marque</th><th>Taille</th><th>Sexe</th><th>État</th><th>Actions</th></tr>';
+echo '<tr><th>ID</th><th>Nom</th><th>Prix HTVA</th><th>Image</th><th>Marque</th><th>Taille</th><th>Sexe</th><th>État</th><th>Categorie</th><th>Actions</th></tr>';
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     echo '<tr>';
     echo '<td>' . $row['id_produit'] . '</td>';
@@ -121,7 +137,35 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     echo '<td>' . $row['nom_marque'] . '</td>';
     echo '<td>' . $row['libelle'] . '</td>';
     echo '<td>' . $row['sexe_produit'] . '</td>';
-    echo '<td>' . $row['libelle_etat'] . '</td>'; // Utiliser le champ correct pour l'État
+    echo '<td>' . $row['libelle_etat'] . '</td>';
+    echo '<td>' . (isset($row['nom_categorie']) ? $row['nom_categorie'] : 'Non catégorisé') . '</td>';
+    echo '<td><a href="modifier_produit.php?id=' . $row['id_produit'] . '">Modifier</a> | <a href="supprimer_produit.php?id=' . $row['id_produit'] . '">Supprimer</a></td>';
+    echo '</tr>';
+}
+echo '</table>';
+?>
+
+<h1>Liste des autres produits vendu</h1>
+<?php
+$stmt = $pdo->query("SELECT * FROM produit 
+JOIN marque ON produit.id_marque = marque.id_marque 
+JOIN etat ON produit.id_etat = etat.id_etat 
+JOIN taille ON produit.id_taille = taille.id_taille 
+LEFT JOIN categorie ON produit.id_categorie = categorie.id_categorie
+WHERE etat_vente <> 'disponible'");
+echo '<table border="1">';
+echo '<tr><th>ID</th><th>Nom</th><th>Prix HTVA</th><th>Image</th><th>Marque</th><th>Taille</th><th>Sexe</th><th>État</th><th>Categorie</th><th>Actions</th></tr>';
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    echo '<tr>';
+    echo '<td>' . $row['id_produit'] . '</td>';
+    echo '<td>' . $row['nom_produit'] . '</td>';
+    echo '<td>' . $row['prix_vente_htva'] . '</td>';
+    echo '<td><img src="' . $row['classe_image'] . '" width="100"></td>';
+    echo '<td>' . $row['nom_marque'] . '</td>';
+    echo '<td>' . $row['libelle'] . '</td>';
+    echo '<td>' . $row['sexe_produit'] . '</td>';
+    echo '<td>' . $row['libelle_etat'] . '</td>';
+    echo '<td>' . (isset($row['nom_categorie']) ? $row['nom_categorie'] : 'Non catégorisé') . '</td>';
     echo '<td><a href="modifier_produit.php?id=' . $row['id_produit'] . '">Modifier</a> | <a href="supprimer_produit.php?id=' . $row['id_produit'] . '">Supprimer</a></td>';
     echo '</tr>';
 }

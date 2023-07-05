@@ -9,6 +9,8 @@ if (!isset($_SESSION['panier'])) {
 $taille = isset($_GET['taille']) ? $_GET['taille'] : [];
 $marque = isset($_GET['marque']) ? $_GET['marque'] : [];
 $etat = isset($_GET['etat']) ? $_GET['etat'] : [];
+$categorie = isset($_GET['categorie']) ? $_GET['categorie'] : [];
+
 
 // Traitement du formulaire de suppression
 if (isset($_POST['retirer_panier'])) {
@@ -23,11 +25,12 @@ if (isset($_POST['retirer_panier'])) {
     exit();
 }
 
-$sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, etat.libelle_etat AS libelle_etat 
+$sql = "SELECT produit.*, marque.nom_marque, taille.libelle AS libelle_taille, etat.libelle_etat AS libelle_etat, categorie.nom_categorie 
         FROM produit 
         LEFT JOIN marque ON produit.id_marque = marque.id_marque 
         LEFT JOIN taille ON produit.id_taille = taille.id_taille 
         LEFT JOIN etat ON produit.id_etat = etat.id_etat 
+        LEFT JOIN categorie ON produit.id_categorie = categorie.id_categorie 
         WHERE produit.etat_vente = 'disponible'";
 
 
@@ -41,6 +44,10 @@ if (!empty($marque)) {
 
 if (!empty($etat)) {
     $sql .= " AND produit.id_etat IN (" . implode(',', array_map('intval', $etat)) . ")";
+}
+
+if (!empty($categorie)) {
+    $sql .= " AND produit.id_categorie IN (" . implode(',', array_map('intval', $categorie)) . ")";
 }
 
 $pdo = connexion_bdd();
@@ -138,6 +145,15 @@ if (isset($_POST['ajouter_panier'])) {
         while ($row = $etatStmt->fetch(PDO::FETCH_ASSOC)) {
             $checked = in_array($row['id_etat'], $etat) ? 'checked' : '';
             echo '<input type="checkbox" name="etat[]" value="' . $row['id_etat'] . '" ' . $checked . '>' . $row['libelle_etat'] . '<br>';
+        }
+        ?>
+
+        <label for="categorie">Catégorie :</label>
+        <?php
+        $categorieStmt = $pdo->query("SELECT * FROM categorie");
+        while ($row = $categorieStmt->fetch(PDO::FETCH_ASSOC)) {
+            $checked = in_array($row['id_categorie'], $categorie) ? 'checked' : '';
+            echo '<input type="checkbox" name="categorie[]" value="' . $row['id_categorie'] . '" ' . $checked . '>' . $row['nom_categorie'] . '<br>';
         }
         ?>
 

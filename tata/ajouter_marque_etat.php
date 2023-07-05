@@ -33,6 +33,25 @@ if (isset($_POST['ajouter_taille'])) {
     $stmt->execute([$nom_taille]);
 }
 
+// Traiter le formulaire d'ajout de catégorie
+if (isset($_POST['ajouter_categorie'])) {
+    $nom_categorie = $_POST['nom_categorie'];
+
+    $pdo = connexion_bdd();
+    $stmt = $pdo->prepare("INSERT INTO categorie (nom_categorie) VALUES (?)");
+    $stmt->execute([$nom_categorie]);
+}
+
+// Traitement de la suppression de catégorie
+if (isset($_GET['supprimer_categorie'])) {
+    $id_categorie = $_GET['supprimer_categorie'];
+
+    $pdo = connexion_bdd();
+    $stmt = $pdo->prepare("DELETE FROM categorie WHERE id_categorie = ?");
+    $stmt->execute([$id_categorie]);
+}
+
+
 // Traitement de la suppression de marque
 if (isset($_GET['supprimer_marque'])) {
     $id_marque = $_GET['supprimer_marque'];
@@ -90,6 +109,13 @@ if (isset($_GET['supprimer_taille'])) {
     <input type="submit" name="ajouter_taille" value="Ajouter la taille">
 </form>
 
+<h1>Ajouter une catégorie</h1>
+<form action="" method="post">
+    <label for="nom_categorie">Nom de la catégorie:</label>
+    <input type="text" name="nom_categorie" id="nom_categorie" required>
+    <input type="submit" name="ajouter_categorie" value="Ajouter la catégorie">
+</form>
+
 <h1>Liste des marques</h1>
 <table>
     <tr>
@@ -109,6 +135,27 @@ if (isset($_GET['supprimer_taille'])) {
     }
     ?>
 </table>
+
+<h1>Liste des catégories</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nom de la catégorie</th>
+        <th>Action</th>
+    </tr>
+    <?php
+    $pdo = connexion_bdd();
+    $stmt = $pdo->query("SELECT * FROM categorie");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo '<tr>';
+        echo '<td>' . $row['id_categorie'] . '</td>';
+        echo '<td>' . $row['nom_categorie'] . '</td>';
+        echo '<td><a href="?supprimer_categorie=' . $row['id_categorie'] . '">Supprimer</a></td>';
+        echo '</tr>';
+    }
+    ?>
+</table>
+
 
 <h1>Liste des états</h1>
 <table>

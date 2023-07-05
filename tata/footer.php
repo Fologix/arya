@@ -4,10 +4,10 @@
             <div class="col-md-3">
                 <h3>A propos</h3>
                 <ul>
-                    <li><a href="#">Conditions générales de vente</a></li>
-                    <li><a href="#">Mentions légales</a></li>
+                    <li><a href="cgv.php">Conditions générales de vente</a></li>
+                    <li><a href="mentions_legales.php">Mentions légales</a></li>
                     <li><a href="#">Contact</a></li>
-                    <li><a href="#">Politique de confidentialité</a></li>
+                    <li><a href="pdc.php">Politique de confidentialité</a></li>
                 </ul>
             </div>
             <div class="col-md-6">
