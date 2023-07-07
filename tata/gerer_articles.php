@@ -33,7 +33,8 @@ if (isset($_POST['ajouter_produit'])) {
     $categorie_produit = $_POST['categorie_produit'];
 
     $image = $_FILES['image']['name'];
-
+if (!is_uploaded_file($_FILES['image']['tmp_name'])) {
+} else {
     // Obtenir l'extension du fichier
     $ext = pathinfo($image, PATHINFO_EXTENSION);
 
@@ -48,7 +49,9 @@ if (isset($_POST['ajouter_produit'])) {
     $pdo = connexion_bdd();
     $stmt = $pdo->prepare("INSERT INTO produit (nom_produit, prix_vente_htva, classe_image, id_marque, id_taille, sexe_produit, id_etat, id_categorie) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$nom_produit, $prix_vente_htva, $target, $marque_produit, $taille_produit, $sexe_produit, $id_etat, $categorie_produit]);
+
 }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
