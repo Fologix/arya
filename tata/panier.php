@@ -61,7 +61,7 @@ if (isset($_POST['retirer_panier'])) {
                 </li>
             <?php endforeach; ?>
         </ul>
-        <a href="validation_adresse.php">Passer à l'adresse</a>
+        <a href="choix_livraison.php">Passer à la livraison</a>
     <?php endif; ?>
 </div>
 </body>

@@ -32,39 +32,6 @@ if (isset($_POST['submit'])) {
         exit;
     }
 }
-
-$api_key = 'your_api_key';
-$relay_points = [];
-$delivery_price = null;
-
-if (!empty($user['code_postal_client']) && !empty($user['localite_client'])) {
-    $delivery_price = get_delivery_price($user['code_postal_client'], $user['localite_client']);
-    $relay_points = get_relay_points($user['code_postal_client'], $user['localite_client']);
-}
-
-// Fonction pour obtenir les tarifs de livraison
-function get_delivery_price($postcode, $country) {
-    global $api_key;
-    // Faire une requête à l'API de Mondial Relay ici et retourner le prix
-    // $url = "https://api.mondialrelay.com/get_delivery_price?api_key=".$api_key."&postcode=".$postcode."&country=".$country;
-    // $response = file_get_contents($url);
-    // $data = json_decode($response);
-    // return $data->price;
-
-    return 10; // Retourne un prix fixe pour l'instant
-}
-
-// Fonction pour obtenir les points de livraison
-function get_relay_points($postcode, $country) {
-    global $api_key;
-    // Faire une requête à l'API de Mondial Relay ici et retourner les points de livraison
-    // $url = "https://api.mondialrelay.com/get_relay_points?api_key=".$api_key."&postcode=".$postcode."&country=".$country;
-    // $response = file_get_contents($url);
-    // $data = json_decode($response);
-    // return $data->relay_points;
-
-    return []; // Retourne un tableau vide pour l'instant
-}
 ?>
 
 <!DOCTYPE html>
@@ -91,18 +58,6 @@ function get_relay_points($postcode, $country) {
         <p><?php echo $error; ?></p>
     <?php endif; ?>
 
-    <?php if ($delivery_price !== null) : ?>
-        <h2>Prix de la livraison : <?= $delivery_price ?>€</h2>
-    <?php endif; ?>
-
-    <?php if (!empty($relay_points)) : ?>
-        <h2>Points de livraison :</h2>
-        <ul>
-            <?php foreach ($relay_points as $point) : ?>
-                <li><?= $point ?></li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
 </div>
 </body>
 </html>
