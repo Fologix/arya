@@ -21,9 +21,9 @@ try {
 
         // Enregistrer les informations de la commande dans la base de données
         $stmt = $pdo->prepare("
-            INSERT INTO commande (numero_commande, date_commande, montant_total, id_client, adresse_livraison, complement_adresse, localite_client, code_postal_client, methode_paiement) 
-            VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?)
-        ");
+    INSERT INTO commande (numero_commande, date_commande, montant_total, id_client, adresse_livraison, complement_adresse, localite_client, code_postal_client, methode_paiement, type_livraison) 
+    VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
+");
         $stmt->execute([
             $payment_intent->id, // Utilisez l'ID d'intention de paiement comme numéro de commande
             $payment_intent->amount_received / 100, // Le montant est renvoyé en centimes, le convertir en euros
@@ -32,8 +32,10 @@ try {
             $user['complement_adresse'], // Le complément d'adresse
             $user['localite_client'], // La localité
             $user['code_postal_client'], // Le code postal
-            $payment_intent->payment_method_types[0] // Le type de méthode de paiement (par exemple, 'card')
+            $payment_intent->payment_method_types[0], // Le type de méthode de paiement (par exemple, 'card')
+            $_SESSION['type_livraison'] // Le type de livraison
         ]);
+
 
         $id_commande = $pdo->lastInsertId(); // Récupérez l'ID de la commande que vous venez d'insérer
 

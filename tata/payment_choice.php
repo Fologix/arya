@@ -6,6 +6,14 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: connexion.php");
     exit;
 }
+
+// Stocker le mode de livraison dans la session
+if (isset($_POST['type_livraison'])) {
+    $_SESSION['type_livraison'] = $_POST['type_livraison'];
+} else if (isset($_GET['type_livraison'])) {
+    $_SESSION['type_livraison'] = $_GET['type_livraison'];
+}
+
 ?>
 
 <!DOCTYPE html>

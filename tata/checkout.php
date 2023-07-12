@@ -6,6 +6,14 @@ require 'vendor/autoload.php'; // Inclut la bibliothèque Stripe PHP. Assurez-vo
 
 include_once 'connexion_BDD.php';
 
+// Stocker le mode de livraison dans la session
+if (isset($_POST['type_livraison'])) {
+    $_SESSION['type_livraison'] = $_POST['type_livraison'];
+} else if (isset($_GET['type_livraison'])) {
+    $_SESSION['type_livraison'] = $_GET['type_livraison'];
+}
+
+
 $pdo = connexion_bdd();
 
 $user_id = $_SESSION['user_id'];
